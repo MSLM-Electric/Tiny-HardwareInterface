@@ -102,7 +102,8 @@ typedef struct {
 	InterfacePortState_e Status; //(int)
 	u16 outCursor; //outPtr; mb outCursorPos; sendbufPos;
 	u16 inCursor;  //inPtr;
-	u16 errCnt;
+	u16 sendErrCnt;
+	//u16 recvErrCnt;
 #ifdef ENABLE_DELAYED_RECV
 	DelayedRecv_t DelayedRecv;
 #endif // !ENABLE_DELAYED_RECV

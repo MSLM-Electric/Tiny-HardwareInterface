@@ -102,3 +102,9 @@ int USART_Transmit(uint8_t data)
 #endif // !DEBUG_ON_VS
     return 0;
 }
+
+int USART_TXRXsimpleCheck(char data)
+{
+    UART_SendChar(data);
+    UART_SendChar(UART_GetChar());
+}

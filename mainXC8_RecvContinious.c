@@ -88,7 +88,11 @@ void __interrupt() ISR(void)
     
     if (PIR1bits.RCIF)  // Interrupt for data reception
     {
-        ReceiveInterrupt(&SlavePort);
+        if ((SlavePort.Status & (PORT_READY | PORT_RECEIVING)) == ONLY(PORT_READY | PORT_RECEIVING)) {
+            SlavePort.Status |= PORT_RECEIVED;
+            FUNCTION_EXECUTE_PRINT(/*TRACE_RECV_FUNC*/0);
+            Recv(&SlavePort, NULL, no_required_now);
+        }
     }
 #else
 
@@ -152,16 +156,16 @@ void main(void* arg)
             Write(&SlavePort, SlavePort.BufferRecved, RECV_BUFFER_SIZE);
         }
         SendingTimerHandle(&SlavePort);
-        if (SlavePort.Status & PORT_SENDED_ALL)
+        if (SlavePort.Status & PORT_SENDED_ALL) {
+            SlavePort.Status clearBITS(PORT_SENDED_ALL);
             RecvContiniousStart(&SlavePort, buffer);
+        }
         
         if (IsTimerRingingKnowByRef(&Timer10ms, TickToRef)) {
             RestartTimerByRef(&Timer10ms, TickToRef);
             if(IsTimerRingingKnowByRef(&Timer1s, TickToRef)){
                 RestartTimerByRef(&Timer1s, TickToRef);
-
-                //UART_SendChar('A');
-                //UART_SendChar(UART_GetChar());
+                //USART_TXRXsimpleCheck('A');
             }
         }
     }

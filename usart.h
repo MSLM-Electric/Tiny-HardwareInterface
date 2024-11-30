@@ -16,6 +16,7 @@ void USART_TransmitINTEnable(void);
 void USART_TransmitINTDisable(void);
 uint8_t USART_GetDataFromReceiveISR(void);
 int USART_Transmit(uint8_t data);
+int USART_TXRXsimpleCheck(char data);
 
 #endif // !USART_H
 

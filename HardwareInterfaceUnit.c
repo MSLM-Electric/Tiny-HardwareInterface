@@ -236,20 +236,18 @@ int SendingTimerHandle(InterfacePortHandle_t *Port) //!!<---  IsTimerWPStarted()
 	if ((Port->Status & (PORT_BUSY | PORT_SENDING)) == ONLY(PORT_BUSY | STILL PORT_SENDING)) {
 		if (NOT IsTimerWPStarted(&Port->SendingTimer)) {
 			DEBUG_PRINTF(1, ("Send timer not started even!\n"));
-			Port->Status clearBITS(PORT_BUSY | PORT_SENDING | PORT_SENDED | PORT_SENDING_LAST_BYTE | PORT_SENDED_ALL);
+			Port->Status clearBITS(PORT_BUSY | PORT_SENDING | PORT_SENDED | PORT_SENDING_LAST_BYTE /*| PORT_SENDED_ALL*/);
 			res = -1;
 		}
 		else if (IsSendingTimerRinging) {
 			StopTimerWP(&Port->SendingTimer);
 			DEBUG_PRINTF(1, ("Sending timeout occured!\n"));
 			//Error occur. Successfull sending should not reach Sending timeout! If SendingTimer Ringed then:
-			//Port->Status setBITS(PORT_ERROR);
-			//Port->sendErrCnt;
-			Port->Status clearBITS(PORT_SENDING_LAST_BYTE | PORT_SENDING | PORT_BUSY | PORT_SENDED_ALL);
+			Port->Status clearBITS(PORT_SENDING_LAST_BYTE | PORT_SENDING | PORT_BUSY /*| PORT_SENDED_ALL*/);
 			res = -1;
 		}
 		if(res == -1){
-			Port->errCnt++;
+			Port->sendErrCnt++;
 			Port->Status setBITS(PORT_ERROR);
 			/*--Real hardware interface peripheral settings--*/
 			HWPort.clearOrResetSomeFlags = 0;
@@ -302,7 +300,7 @@ int ReceivingTimerHandle(InterfacePortHandle_t* PortHandle)
 			{
 				//Port not received data;
 				PortHandle->Status setBITS(PORT_ERROR);
-				//PortHandle->RecvErrCnt++;
+				//PortHandle->recvErrCnt++;
 			}
 			PortHandle->LenDataToRecv = PortHandle->inCursor;
 			FUNCTION_EXECUTE_PRINT(/*TRACE_RECV_TIMER*/0);
@@ -327,7 +325,7 @@ int ReceivingTimerHandle(InterfacePortHandle_t* PortHandle)
 
 static void ErrorPortSendingHandle(InterfacePortHandle_t *Port)
 {
-	Port->errCnt++;
+	Port->sendErrCnt++;
 	/*--Real hardware interface peripheral settings--*/
 	HWPort.clearOrResetSomeFlags = 0;
 	HWPort.TXInterruptEnable = 0;
