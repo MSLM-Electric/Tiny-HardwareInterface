@@ -85,17 +85,6 @@ typedef u32 u32_t;
 
 #define clearBITS(x) &= ~(u32)(x)
 #define setBITS(x) |= (x)
-//#define BITPOS(x) y = while((x >> 1) > 1){y++};
-//#define asm __asm
-//u16 BitPos(u16 Bit);
-//u16 BitPos(u16 Bit)
-//{
-//	u16 res = 0;
-//	while ((Bit >> res) > 1) {
-//		res++;
-//	}
-//	return res;
-//}
 
 #ifndef DEBUG_PRINTF
 #ifndef DISABLE_LOGS
@@ -120,22 +109,7 @@ typedef u32 u32_t;
                                 printf("line executed: %s: %d\n", __FILE__, __LINE__); \
                         }while(0)\
 
-/*gcc (optimiz. QT) not compatible/dangerous //? void *CUT_FILES_PATH()
-#define MINIMIZE_FILE_PATH
-#ifdef MINIMIZE_FILE_PATH
-//MINIMIZE_FILE_PATH for unload to printing
-inline char* CUT_FILES_PATH(char* x, int siz) {
-    if (siz > 3) {
-        if (x[siz - 2] == '.')
-            if ((x[siz - 1] == 'h') || (x[siz - 1] == 'c')) {
-                int pos = siz - 3;
-                while ((x[pos--] != '\\') && (pos));
-                return (char*)&x[pos];
-            }
-    }
-    return x;
-}
-
+/*
 #define LINE_EXECUTE_PRINTM(x) do{\
                             if(x)\
                                 printf("line executed: %s: %d\n", CUT_FILES_PATH(__FILE__, strlen(__FILE__)), __LINE__); \

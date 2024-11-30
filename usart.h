@@ -1,6 +1,10 @@
 #ifndef USART_H
 #define USART_H
+#ifndef DEBUG_ON_VS
 #include <xc.h>
+#else
+#include "vssimulationport.h"
+#endif // !DEBUG_ON_VS
 #include <stdint.h>
 
 void UART_Init(void);

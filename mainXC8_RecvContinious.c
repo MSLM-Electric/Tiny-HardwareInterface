@@ -133,6 +133,7 @@ void main(void* arg)
     GlobalMCUINT_init();
     while(NOT IsTimerWPRinging(&Timer1s));
     RestartTimerWP(&Timer1s);
+    RecvContiniousStart(&SlavePort, buffer);
     while (1)
     {
         // Sending data
@@ -142,26 +143,26 @@ void main(void* arg)
         //__delay_ms(1000);
         TimerBaseType TickToRef = getTickValue();
 
+        ReceivingTimerHandle(&SlavePort);
+        if (SlavePort.Status & PORT_RECEIVED_ALL) {
+            //DEBUG_PRINTM(1, SlavePort.BufferRecved);
+            //Write(&SlavePort, "Slave've got your msg!\n", 24);
+            //memcpy(buffer, storedBuffer, sizeof(storedBuffer));
+            StopRecvContinious(&SlavePort);
+            Write(&SlavePort, SlavePort.BufferRecved, RECV_BUFFER_SIZE);
+        }
+        SendingTimerHandle(&SlavePort);
+        if (SlavePort.Status & PORT_SENDED_ALL)
+            RecvContiniousStart(&SlavePort, buffer);
+        
         if (IsTimerRingingKnowByRef(&Timer10ms, TickToRef)) {
             RestartTimerByRef(&Timer10ms, TickToRef);
-            if ((SlavePort.Status & (PORT_BUSY | PORT_SENDING)) == NOTHING) {
-                memset(SlavePort.BufferRecved, 0, sizeof(SlavePort.BufferRecved));
-                Recv(&SlavePort, buffer, sizeof(buffer));
-            }
             if(IsTimerRingingKnowByRef(&Timer1s, TickToRef)){
                 RestartTimerByRef(&Timer1s, TickToRef);
 
                 //UART_SendChar('A');
                 //UART_SendChar(UART_GetChar());
             }
-            ReceivingTimerHandle(&SlavePort);
-            if (SlavePort.Status & PORT_RECEIVED_ALL) {
-                //DEBUG_PRINTM(1, SlavePort.BufferRecved);
-                //Write(&SlavePort, "Slave've got your msg!\n", 24);
-                //memcpy(buffer, storedBuffer, sizeof(storedBuffer));
-                Write(&SlavePort, SlavePort.BufferRecved, RECV_BUFFER_SIZE);
-            }
-            SendingTimerHandle(&SlavePort);
         }
     }
 }

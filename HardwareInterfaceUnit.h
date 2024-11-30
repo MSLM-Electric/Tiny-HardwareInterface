@@ -25,7 +25,7 @@ HANDLE HardwareImmitMutex; //on real hardware mutex not needed
 typedef struct {
 	u8 TXInterruptEnable;
 	u8 RXInterruptEnable;
-	u32 someSettings; //Common Inits
+	u16 someSettings; //Common Inits
 	u8 BUFFER;
 	u8 StartTX;
 	u8 StartRX;
@@ -36,6 +36,7 @@ typedef struct {
 #endif //!IN_CASE_OF_FIFO_TYPE
 }HardwarePort_t;
 #define MASTER_SLAVE_IMMIT_IN_1CORE
+#define MASTER_OR_SLAVE_IMMIT_EN 0
 #if defined(DEBUG_ON_VS) && defined(MASTER_SLAVE_IMMIT_IN_1CORE)
 enum {
 	SLAVENO,
@@ -58,7 +59,7 @@ char globMutexFile[200];
 #endif //GLOB_MUTEX_FILE
 
 typedef enum {
-	PORT_CLEAR = 0,//PORT_OFF = 0, //,
+	PORT_CLEAR = 0, //PORT_OFF = 0, //,
 	PORT_READY = 1, //mb PORT_OK
 	PORT_BUSY = 1 << 1,      //mb not needed. instead it mb use only receiving flag
 	PORT_SENDING = 1 << 2,
@@ -72,7 +73,7 @@ typedef enum {
 	PORT_RECEIVED_ALL = 1 << 10,
 	PORT_SENDED_ALL = 1 << 11,
 	PORT_ERROR = 1 << 12,
-	//PORT_USING_ON_BACKGND = 1 << 12, //?mb not needed!
+	//PORT_USING_ON_BACKGND = 1 << 13, //?mb not needed!
 }InterfacePortState_e;
 
 #ifdef ENABLE_DELAYED_RECV
@@ -132,6 +133,8 @@ int ReceivingHandle(InterfacePortHandle_t* Port);
 int ReceivingTimerHandle(InterfacePortHandle_t* PortHandle);
 void TransmitInterrupt(void* arg); //Call_TXInterrupt()
 void ReceiveInterrupt(void* arg); //void ReceiveInterrupt(void* arg);
+int RecvContiniousStart(InterfacePortHandle_t* Port, uint8_t* outBuff);
+int StopRecvContinious(InterfacePortHandle_t* Port);
 //int SentInterrupt(void); //End of transmit callback
 int immitationReceivingOfPortsBus(InterfacePortHandle_t* outPortHandle);
 #ifdef GLOB_MUTEX_FILE

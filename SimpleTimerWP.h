@@ -17,9 +17,8 @@ extern "C" {
 #define USE_REGISTERING_TIMERS_WITH_CALLBACK
 #endif // !MINIMAL_CODESIZE
 
-#define ms_x100us(x) x*10 //1ms is  10 x 100microseconds
-#define ms_x10us(x) x*100 //2ms is  200 x 10microseconds
-#define x10ms  //just for beautyfying and readability code
+#define x1ms   //just for beautyfying and readability code
+#define x10ms  
 #define x100ms
 #define x1s
 #define x10us
@@ -27,6 +26,17 @@ extern "C" {
 
 typedef uint32_t U32_ms;
 typedef uint32_t U32_us;
+
+
+#define TIMER_TICK_16BIT_EN 1
+#define TIMER_TICK_32BIT_EN 0
+#define TIMER_TICK_8BIT_EN 0 //!not implemented yet
+
+#if TIMER_TICK_16BIT_EN
+typedef uint16_t TimerBaseType;
+#elif TIMER_TICK_32BIT_EN
+typedef uint32_t TimerBaseType;
+#endif // 
 
 #ifndef MINIMAL_CODESIZE
 typedef void* (tickptr_fn)();
@@ -36,7 +46,7 @@ typedef void* tickptr_fn; //just for compatiblity
 #endif // !__SIMPLETIMER_H_
 
 #ifdef MINIMAL_CODESIZE
-extern uint32_t someExternalTick;
+extern TimerBaseType someExternalTick;
 #endif // !MINIMAL_CODESIZE
 
 
@@ -51,8 +61,8 @@ typedef enum {
 }timerType_enum;
 
 typedef struct {
-	uint32_t setVal;
-	uint32_t launchedTime;
+	TimerBaseType setVal;
+	TimerBaseType launchedTime;
 	uint8_t Start;
 #ifndef MINIMAL_CODESIZE
     timerType_enum TimType;
@@ -66,8 +76,8 @@ typedef struct {
 }Timert_t;
 
 typedef struct {
-	uint32_t setVal;
-	uint32_t launchedTime;
+	TimerBaseType setVal;
+	TimerBaseType launchedTime;
 	uint8_t Start;
 #ifndef MINIMAL_CODESIZE
 	timerType_enum TimType;
@@ -88,7 +98,7 @@ typedef struct {
 }stopwatchwp_t;
 
 void InitTimerWP(Timert_t* Timer, tickptr_fn* SpecifyTickFunction);
-void InitTimerGroup(Timert_t* ArrTimers, tickptr_fn* SpecifyTickFunction, uint8_t qntyTimers, uint32_t setVals);
+void InitTimerGroup(Timert_t* ArrTimers, tickptr_fn* SpecifyTickFunction, uint8_t qntyTimers, TimerBaseType setVals);
 #ifndef MINIMAL_CODESIZE
 void InitStopWatchWP(stopwatchwp_t* timeMeasure, tickptr_fn* SpecifyTickFunction);
 void InitStopWatchGroup(stopwatchwp_t* stopwatchArr, tickptr_fn* SpecifyTickFunction, uint8_t qnty);
@@ -96,15 +106,15 @@ uint32_t StopWatchWP(stopwatchwp_t* timeMeasure);
 uint32_t CyclicStopWatchWP(stopwatchwp_t* timeMeasure, uint16_t Ncycle);
 #endif // !MINIMAL_CODESIZE
 
-void LaunchTimerWP(uint32_t time, Timert_t* Timer);
+void LaunchTimerWP(TimerBaseType time, Timert_t* Timer);
 void StopTimerWP(Timert_t* Timer);
 void StopTimerGroup(Timert_t* ArrTimers, uint8_t qntyTimers);
 uint8_t IsTimerWPStarted(Timert_t* Timer);
 uint8_t IsTimerWPRinging(Timert_t* Timer);
-uint8_t IsTimerRingingKnowByRef(SimpleTimer_t *Timer, uint32_t asRef);
+uint8_t IsTimerRingingKnowByRef(SimpleTimer_t *Timer, TimerBaseType asRef);
 uint8_t RestartTimerWP(Timert_t* Timer);
 uint8_t RestartTimerGroup(Timert_t* ArrTimers, uint8_t qntyTimers);
-void catchBreakPoint(uint32_t *var); //Click to set breakpoint there where it called when debugging
+void catchBreakPoint(TimerBaseType *var); //Click to set breakpoint there where it called when debugging
 #if defined(USE_REGISTERING_TIMERS_WITH_CALLBACK) && !defined(MINIMAL_CODESIZE)
 uint8_t RegisterTimerCallback(Timert_t* Timer, timerwpcallback_fn* ThisTimerCallback, timerType_enum timType, tickptr_fn* SpecifyTickFunc);  //RegisterTimerWithCallbackToList() sounds better
 uint8_t UnRegisterTimerCallback(Timert_t* Timer);                                                                                            //UnRegisterTimerWithCallbackFromList()
