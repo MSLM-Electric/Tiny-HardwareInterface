@@ -141,11 +141,11 @@ void main(void* arg)
             RestartTimerByRef(&Timer10ms, TickToRef);
             if ((SlavePort.Status & (PORT_BUSY | PORT_SENDING)) == NOTHING) {
                 memset(SlavePort.BufferRecved, 0, sizeof(SlavePort.BufferRecved));
-                //Recv(&SlavePort, buffer, sizeof(buffer));
+                Recv(&SlavePort, buffer, sizeof(buffer));
             }
             if(IsTimerRingingKnowByRef(&Timer1s, TickToRef)){
                 RestartTimerByRef(&Timer1s, TickToRef);
-                USART_TXRXsimpleCheck('A');
+                //USART_TXRXsimpleCheck('A');
             }
             ReceivingTimerHandle(&SlavePort);
             if (SlavePort.Status & PORT_RECEIVED_ALL) {

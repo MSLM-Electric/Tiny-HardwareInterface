@@ -143,8 +143,8 @@ int Write(InterfacePortHandle_t* PortHandle, const uint8_t *inDatas, const int s
 int Recv(InterfacePortHandle_t* PortHandle, uint8_t *outBuff, const int maxPossibleSize)
 {
 	int res = 0;
-	//u8 IsRecvTimerRinging = IsTimerWPRinging(&PortHandle->ReceivingTimer);
-	if ((PortHandle->Status & (PORT_READY | PORT_RECEIVING | PORT_BUSY)) == ONLY PORT_READY) {
+	//u8 IsRecvTimerRinging = IsTimerWPRinging(&PortHandle->ReceivingTimer);    
+    if ((PortHandle->Status & (PORT_READY | PORT_RECEIVING | PORT_BUSY)) == ONLY PORT_READY) {
 #ifdef ENABLE_DELAYED_RECV
 		memset(&PortHandle->DelayedRecv, 0, sizeof(PortHandle->DelayedRecv));
 #endif // !ENABLE_DELAYED_RECV
@@ -283,7 +283,7 @@ int ReceivingTimerHandle(InterfacePortHandle_t* PortHandle)
 	u8 IsRecvTimerRinging = IsTimerWPRinging(&PortHandle->ReceivingTimer);
 	FUNCTION_EXECUTE_PRINT(/*TRACE_RECV_TIMER*/0);
 	if ((PortHandle->Status & (PORT_BUSY | PORT_RECEIVING)) == STILL ONLY (PORT_BUSY | PORT_RECEIVING)) {
-		if (NOT IsTimerWPStarted(&PortHandle->ReceivingTimer)) {
+		if ((NOT IsTimerWPStarted(&PortHandle->ReceivingTimer))&&(NOT (PortHandle->Status & PORT_RECEIVING_CONTINIOUS))) {
 			PortHandle->Status setBITS(PORT_ERROR);
 			DEBUG_PRINTF(1, ("Recv timer not started even!\n"));
 			PortHandle->Status clearBITS(PORT_RECEIVING | PORT_BUSY | PORT_RECEIVED);
@@ -393,14 +393,33 @@ static int PortSend(InterfacePortHandle_t *PortHandle, uint8_t BUFFER)
 int RecvContiniousStart(InterfacePortHandle_t* Port, uint8_t *outBuff)
 {
 	if ((Port->Status & (PORT_BUSY | PORT_SENDING)) == NOTHING) {
+        //startRXframe=0;
 		memset(Port->BufferRecved, 0, RECV_BUFFER_SIZE);
         Port->Status setBITS(PORT_RECEIVING_CONTINIOUS);
-		Recv(Port, outBuff, RECV_BUFFER_SIZE);
+		//if ((PortHandle->Status & (PORT_READY | PORT_RECEIVING | PORT_BUSY)) == ONLY PORT_READY) {
+		Port->LenDataToRecv = RECV_BUFFER_SIZE;
+		Port->inCursor = 0;
+		FUNCTION_EXECUTE_PRINT(/*TRACE_RECV_TIMER*/0);
+		//! RestartTimerWP(&PortHandle->ReceivingTimer);
+		Port->Status setBITS(PORT_BUSY | PORT_RECEIVING);
+		Port->Status clearBITS(PORT_RECEIVED | PORT_RECEIVED_ALL);
+		/*Real hardware interface peripheral settings*/
+		HWPort.clearOrResetSomeFlags = 0;
+		HWPort.someSettings = 0xFF;
+#ifdef IN_CASE_OF_FIFO_TYPE
+		HWPort.clearFIFO = 1; //?mb
+#endif // !IN_CASE_OF_FIFO_TYPE
+		HWPort.RXInterruptEnable = 1;
+		HWPort.StartRX = 1;
+		USART_ReceiveINTEnable();
+		/*********************************************/
+	//}
 	}
 }
 
 int StopRecvContinious(InterfacePortHandle_t* Port) 
 {
+    ///startRXframe=1;
 	USART_ReceiveINTDisable();
     Port->Status clearBITS(PORT_RECEIVING_CONTINIOUS);
 	if (Port->Status & PORT_RECEIVED_ALL)

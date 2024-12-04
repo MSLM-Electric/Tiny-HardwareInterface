@@ -51,6 +51,8 @@ static TimerBaseType getTickValue()
     return someExternalTick;
 }
 
+uint8_t startRXframe = 0;
+
 void __interrupt() ISR(void)
 {
 #ifndef DEBUG_ON_VS
@@ -86,11 +88,18 @@ void __interrupt() ISR(void)
     
     if (PIR1bits.RCIF)  // Interrupt for data reception
     {
-        if ((SlavePort.Status & (PORT_READY | PORT_RECEIVING)) == ONLY(PORT_READY | PORT_RECEIVING)) {
+        if(SlavePort.Status & PORT_RECEIVING_CONTINIOUS && (startRXframe==0)){
+            if(USART_GetDataFromReceiveISR() == '!'){
+                startRXframe = 1;
+                RestartTimerByRef(&SlavePort.ReceivingTimer, someExternalTick);
+                SlavePort.Status setBITS(PORT_RECEIVED);
+                Recv(&SlavePort, NULL, no_required_now);
+            }
+        }else if ((SlavePort.Status & (PORT_READY | PORT_RECEIVING)) == ONLY(PORT_READY | PORT_RECEIVING)) {
             SlavePort.Status |= PORT_RECEIVED;
             FUNCTION_EXECUTE_PRINT(/*TRACE_RECV_FUNC*/0);
             Recv(&SlavePort, NULL, no_required_now);
-        }
+        }        
     }
 #else
 #endif // !DEBUG_ON_VS
@@ -135,6 +144,7 @@ void main(void* arg)
     while(NOT IsTimerWPRinging(&Timer1s));
     RestartTimerWP(&Timer1s);
     RecvContiniousStart(&SlavePort, buffer);
+    startRXframe = 0;
     while (1)
     {
         TimerBaseType TickToRef = getTickValue();
@@ -144,12 +154,14 @@ void main(void* arg)
             //Write(&SlavePort, "Slave've got your msg!\n", 24);
             //memcpy(buffer, storedBuffer, sizeof(storedBuffer));
             StopRecvContinious(&SlavePort);
-            Write(&SlavePort, SlavePort.BufferRecved, RECV_BUFFER_SIZE);
+            memcpy(buffer, SlavePort.BufferRecved, RECV_BUFFER_SIZE);
+            Write(&SlavePort, buffer, RECV_BUFFER_SIZE);
         }
         SendingTimerHandle(&SlavePort);
         if (SlavePort.Status & PORT_SENDED_ALL) {
             SlavePort.Status clearBITS(PORT_SENDED_ALL);
             RecvContiniousStart(&SlavePort, buffer);
+            startRXframe = 0;
         }
         
         if (IsTimerRingingKnowByRef(&Timer10ms, TickToRef)) {
