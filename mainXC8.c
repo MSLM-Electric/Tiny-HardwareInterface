@@ -135,24 +135,17 @@ void main(void* arg)
     RestartTimerWP(&Timer1s);
     while (1)
     {
-        // Sending data
-        //UART_SendChar('A');
-
-        // Delay
-        //__delay_ms(1000);
         TimerBaseType TickToRef = getTickValue();
 
         if (IsTimerRingingKnowByRef(&Timer10ms, TickToRef)) {
             RestartTimerByRef(&Timer10ms, TickToRef);
             if ((SlavePort.Status & (PORT_BUSY | PORT_SENDING)) == NOTHING) {
                 memset(SlavePort.BufferRecved, 0, sizeof(SlavePort.BufferRecved));
-                Recv(&SlavePort, buffer, sizeof(buffer));
+                //Recv(&SlavePort, buffer, sizeof(buffer));
             }
             if(IsTimerRingingKnowByRef(&Timer1s, TickToRef)){
                 RestartTimerByRef(&Timer1s, TickToRef);
-
-                //UART_SendChar('A');
-                //UART_SendChar(UART_GetChar());
+                USART_TXRXsimpleCheck('A');
             }
             ReceivingTimerHandle(&SlavePort);
             if (SlavePort.Status & PORT_RECEIVED_ALL) {

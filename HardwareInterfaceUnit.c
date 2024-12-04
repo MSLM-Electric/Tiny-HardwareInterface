@@ -316,7 +316,8 @@ int ReceivingTimerHandle(InterfacePortHandle_t* PortHandle)
 			HWPort.clearFIFO = 1;
 #endif // !IN_CASE_OF_FIFO_TYPE
 			//memset(HWPort.FIFO_BUFFER, 0, sizeof(HWPort.FIFO_BUFFER /*.LenDataToRecv*/)); //! Nope! Don't clear!
-			USART_ReceiveINTDisable();
+			if(NOT (PortHandle->Status & PORT_RECEIVING_CONTINIOUS))
+                USART_ReceiveINTDisable();
 			/*-----------------------------------------------*/
 		}
 	}
@@ -393,6 +394,7 @@ int RecvContiniousStart(InterfacePortHandle_t* Port, uint8_t *outBuff)
 {
 	if ((Port->Status & (PORT_BUSY | PORT_SENDING)) == NOTHING) {
 		memset(Port->BufferRecved, 0, RECV_BUFFER_SIZE);
+        Port->Status setBITS(PORT_RECEIVING_CONTINIOUS);
 		Recv(Port, outBuff, RECV_BUFFER_SIZE);
 	}
 }
@@ -400,6 +402,7 @@ int RecvContiniousStart(InterfacePortHandle_t* Port, uint8_t *outBuff)
 int StopRecvContinious(InterfacePortHandle_t* Port) 
 {
 	USART_ReceiveINTDisable();
+    Port->Status clearBITS(PORT_RECEIVING_CONTINIOUS);
 	if (Port->Status & PORT_RECEIVED_ALL)
 		Port->Status clearBITS(PORT_RECEIVED_ALL);
 }

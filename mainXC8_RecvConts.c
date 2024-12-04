@@ -54,8 +54,6 @@ static TimerBaseType getTickValue()
 void __interrupt() ISR(void)
 {
 #ifndef DEBUG_ON_VS
-
-
     if (TMR2IF == 1) // Check The Flag
     {
         // Do Timer handling
@@ -95,7 +93,6 @@ void __interrupt() ISR(void)
         }
     }
 #else
-
 #endif // !DEBUG_ON_VS
 }
 
@@ -140,16 +137,10 @@ void main(void* arg)
     RecvContiniousStart(&SlavePort, buffer);
     while (1)
     {
-        // Sending data
-        //UART_SendChar('A');
-
-        // Delay
-        //__delay_ms(1000);
         TimerBaseType TickToRef = getTickValue();
 
         ReceivingTimerHandle(&SlavePort);
         if (SlavePort.Status & PORT_RECEIVED_ALL) {
-            //DEBUG_PRINTM(1, SlavePort.BufferRecved);
             //Write(&SlavePort, "Slave've got your msg!\n", 24);
             //memcpy(buffer, storedBuffer, sizeof(storedBuffer));
             StopRecvContinious(&SlavePort);

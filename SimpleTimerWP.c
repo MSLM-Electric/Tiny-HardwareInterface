@@ -165,7 +165,7 @@ void LaunchTimerWP(TimerBaseType time, Timert_t* Timer)
 	return;
 }
 
-void LaunchTimerByRef(TimerBaseType time, SimpleTimer_t* Timer, TimerBaseType asRef)
+void LaunchTimerByRef(TimerBaseType time, Timer_t* Timer, TimerBaseType asRef)
 {
 	if (Timer != NULL) {
 		if (asRef == 0)
@@ -192,7 +192,7 @@ void StopTimerWP(Timert_t* Timer)
 	return;
 }
 
-void StopSimpleTimer(SimpleTimer_t* Timer)
+void StopSimpleTimer(Timer_t* Timer)
 {
 	StopTimerWP((Timert_t*)Timer); //?
 	return;
@@ -247,7 +247,7 @@ uint8_t IsTimerWPRinging(Timert_t* Timer) {
 	return 0; //nope!
 }
 
-uint8_t IsTimerRingingKnowByRef(SimpleTimer_t *Timer, TimerBaseType asRef)
+uint8_t IsTimerRingingKnowByRef(Timer_t *Timer, TimerBaseType asRef)
 {
 	if (Timer != NULL) {
 		if (Timer->Start) {
@@ -278,7 +278,7 @@ uint8_t RestartTimerWP(Timert_t* Timer)
 	return 0;
 }
 
-uint8_t RestartTimerByRef(SimpleTimer_t* Timer, TimerBaseType asRef)
+uint8_t RestartTimerByRef(Timer_t* Timer, TimerBaseType asRef)
 {
 	if (Timer == NULL)
 		return 255;

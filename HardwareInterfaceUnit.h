@@ -73,6 +73,7 @@ typedef enum {
 	PORT_RECEIVED_ALL = 1 << 10,
 	PORT_SENDED_ALL = 1 << 11,
 	PORT_ERROR = 1 << 12,
+    PORT_RECEIVING_CONTINIOUS = 1 << 13,
 	//PORT_USING_ON_BACKGND = 1 << 13, //?mb not needed!
 }InterfacePortState_e;
 
@@ -89,6 +90,8 @@ typedef struct {
 typedef Timert_t Timerwp_t;
 //#endif // !SPECLIBS
 
+u8 StartIfsWords[] = {0xCC, 0xDD};
+u8 EndIfsWords[] = {0xDD, 0xCC};
 
 typedef struct {
 	uint8_t BufferRecved[RECV_BUFFER_SIZE];
@@ -99,7 +102,7 @@ typedef struct {
 	Timerwp_t SendingTimer;       //this is for describing timeout
 	uint16_t communicationPeriod; //!not demanded for slave //Timerwp_t
 	//uin32_t TotalCommunicationPeriod; //!not demanded for slave
-	InterfacePortState_e Status; //(int)
+	u16 Status; //(int)
 	u16 outCursor; //outPtr; mb outCursorPos; sendbufPos;
 	u16 inCursor;  //inPtr;
 	u16 sendErrCnt;

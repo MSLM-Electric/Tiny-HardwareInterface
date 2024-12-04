@@ -7,7 +7,8 @@ void UART_Init(void)
     TRISCbits.TRISC7 = 1;  // RX as input
 
     BRGH = 1;
-    SPBRG = 25;  // For 9600 baud rate
+    //SPBRG = 25;  // For 9600 baud rate
+    SPBRG = 103;   // For 2400 baud rate
 
     TXSTAbits.SYNC = 0;  // Asynchronous transmission
     RCSTAbits.SPEN = 1;  // Enable UART

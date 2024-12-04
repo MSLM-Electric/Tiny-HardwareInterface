@@ -82,7 +82,7 @@ typedef struct {
 #ifndef MINIMAL_CODESIZE
 	timerType_enum TimType;
 #endif // !MINIMAL_CODESIZE
-}SimpleTimer_t;
+}Timer_t;
 
 #if defined(USE_REGISTERING_TIMERS_WITH_CALLBACK) && !defined(MINIMAL_CODESIZE)
 extern Timert_t* RegisteredTimers[MAX_REGISTER_NUM];
@@ -111,9 +111,10 @@ void StopTimerWP(Timert_t* Timer);
 void StopTimerGroup(Timert_t* ArrTimers, uint8_t qntyTimers);
 uint8_t IsTimerWPStarted(Timert_t* Timer);
 uint8_t IsTimerWPRinging(Timert_t* Timer);
-uint8_t IsTimerRingingKnowByRef(SimpleTimer_t *Timer, TimerBaseType asRef);
+uint8_t IsTimerRingingKnowByRef(Timer_t *Timer, TimerBaseType asRef);
 uint8_t RestartTimerWP(Timert_t* Timer);
 uint8_t RestartTimerGroup(Timert_t* ArrTimers, uint8_t qntyTimers);
+uint8_t RestartTimerByRef(Timer_t* Timer, TimerBaseType asRef);
 void catchBreakPoint(TimerBaseType *var); //Click to set breakpoint there where it called when debugging
 #if defined(USE_REGISTERING_TIMERS_WITH_CALLBACK) && !defined(MINIMAL_CODESIZE)
 uint8_t RegisterTimerCallback(Timert_t* Timer, timerwpcallback_fn* ThisTimerCallback, timerType_enum timType, tickptr_fn* SpecifyTickFunc);  //RegisterTimerWithCallbackToList() sounds better
