@@ -1,3 +1,5 @@
+/* v0.0.1*/
+
 #ifndef HARDWARE_INTERFACE_UNIT_H
 #define HARDWARE_INTERFACE_UNIT_H
 #ifdef __cplusplus
@@ -5,8 +7,6 @@ extern "C" {
 #endif // !_cplusplus
 #include <stdint.h>
 #include "type_def.h"
-//#include "../../Lib/fileHandle.h"
-//#include "../SimpleTimer/SimpleTimerWP.h"
 #include "SimpleTimerWP.h"
 //#include "MasterImmitationCfg.h"
 //#include "SlaveImmitationCfg.h"
@@ -68,13 +68,14 @@ typedef enum {
 	PORT_RECEIVING = 1 << 5, //mb not needed
 	PORT_RECEIVED = 1 << 6,
 	PORT_ASYNC = 1 << 7,     //if zero, then it is a PORT_SYNC.  PORT_ASYNC = RS-485/CAN like interfaces. //!Not implemented yet
-	PORT_MASTER = 1 << 8,    //if zero, it is SLAVE (good approach//?)
+	PORT_MASTER = 1 << 8,    //if zero, it is SLAVE
 	PORT_BUFFER_FIFO = 1 << 9, //if zero, it is simple 8bit buffer //PORT_BUFF_FIFO_ENABLED
 	PORT_RECEIVED_ALL = 1 << 10,
 	PORT_SENDED_ALL = 1 << 11,
 	PORT_ERROR = 1 << 12,
     PORT_RECEIVING_CONTINIOUS = 1 << 13,
-	//PORT_USING_ON_BACKGND = 1 << 13, //?mb not needed!
+    PORT_CATCH_START_RX_FRAME = 1 << 14,
+	//PORT_USING_ON_BACKGND = 1 << 15, //?mb not needed!
 }InterfacePortState_e;
 
 #ifdef ENABLE_DELAYED_RECV
@@ -100,7 +101,7 @@ typedef struct {
 	uint16_t LenDataToRecv; //mb maxPossibleDataRecv
 	Timerwp_t ReceivingTimer;     //for port timeout
 	Timerwp_t SendingTimer;       //this is for describing timeout
-	uint16_t communicationPeriod; //!not demanded for slave //Timerwp_t
+	//uint16_t communicationPeriod; //!not demanded for slave //Timerwp_t
 	//uin32_t TotalCommunicationPeriod; //!not demanded for slave
 	u16 Status; //(int)
 	u16 outCursor; //outPtr; mb outCursorPos; sendbufPos;
@@ -145,6 +146,9 @@ int immitationReceivingOfPortsBus(InterfacePortHandle_t* outPortHandle);
 FRESULT TakeGLOBMutex(/*char* tempBuffer, const size_t maxPossibleLen,*/ FIL* f, uint32_t timeOut);
 FRESULT RealeaseGLOBMutex(FIL* f);
 #endif // !GLOB_MUTEX_FILE
+
+#define TRACEPORT_EN 0
+#if TRACEPORT_EN
 #define ACCUMUL_CAPACITY 200
 typedef struct {
 	Timerwp_t TraceTime; //TraceTimeToAccum
@@ -156,6 +160,7 @@ typedef struct {
 void tracePortInit(tracePortCfg_t* traceP);
 void tracePort(InterfacePortHandle_t* Port, tracePortCfg_t* traceP);
 void ShowTracedAccumulations(tracePortCfg_t* traceP);
+#endif // !TRACE_PORT_EN
 u16 BitPos(u16 Bit);
 
 #ifdef __cplusplus

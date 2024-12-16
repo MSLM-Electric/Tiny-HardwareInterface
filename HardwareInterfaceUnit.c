@@ -440,6 +440,7 @@ int StopRecvContinious(InterfacePortHandle_t* Port)
   PORT_ASYNC = 1 << 7,
   PORT_MASTER = 1 << 8,
   PORT_BUFFER_FIFO = 1 << 9,*/
+#if TRACEPORT_EN 1
 static stopwatchwp_t tracemeasure;
 void tracePortInit(tracePortCfg_t* traceP)
 {
@@ -495,7 +496,7 @@ void ShowTracedAccumulations(tracePortCfg_t* traceP)
 	}
 	traceP->accumArrayPos = 0;
 }
-
+#endif // !TRACEPORT_EN
 u16 BitPos(u16 Bit)
 {
 	u16 res = 0;

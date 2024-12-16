@@ -97,7 +97,6 @@ void __interrupt() ISR(void)
             }
         }else if ((SlavePort.Status & (PORT_READY | PORT_RECEIVING)) == ONLY(PORT_READY | PORT_RECEIVING)) {
             SlavePort.Status |= PORT_RECEIVED;
-            FUNCTION_EXECUTE_PRINT(/*TRACE_RECV_FUNC*/0);
             Recv(&SlavePort, NULL, no_required_now);
         }        
     }
@@ -128,7 +127,7 @@ void GlobalMCUINT_init()
 #endif // !DEBUG_ON_VS
 }
 
-void main(void* arg)
+void main(void)
 {        
     Timer2_to_1ms_interrupt_init();
     InitTimerWP(&Timer1s, NULL);
